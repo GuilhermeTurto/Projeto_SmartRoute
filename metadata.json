@@ -1,0 +1,7 @@
+{
+  "name": "Copy of SmartRoute Prospector",
+  "description": "An intelligent sales companion that discovers local leads, generates prospecting scripts, and optimizes your daily route using Google Maps data.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
