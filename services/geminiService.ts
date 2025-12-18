@@ -3,7 +3,7 @@ import axios from 'axios';
 // Se você ainda não tem GroundingChunk no types.ts, pode manter a interface abaixo
 import { GroundingChunk } from '../types'; 
 
-const API_URL = 'http://localhost:8000/api';
+const API_URL = 'https://projeto-smartroute.onrender.com/api';
 
 // Interface de Retorno (Mantendo a compatibilidade com o que você já usava)
 export interface AppGenerationResult {
