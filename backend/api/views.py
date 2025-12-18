@@ -57,7 +57,7 @@ class AIRouteOptimizerView(APIView):
         """
 
         try:
-            model = genai.GenerativeModel('gemini-pro')
+            model = genai.GenerativeModel('gemini-1.5-flash')
             response = model.generate_content(prompt)
             
             # Retorna o texto gerado para o React
@@ -87,7 +87,7 @@ class AIProspectorView(APIView):
         """
 
         try:
-            model = genai.GenerativeModel('gemini-pro')
+            model = genai.GenerativeModel('gemini-1.5-flash')
             response = model.generate_content(prompt)
             return Response({"result": response.text})
         except Exception as e:
