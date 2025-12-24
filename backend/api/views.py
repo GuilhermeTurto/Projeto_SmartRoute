@@ -10,8 +10,17 @@ from .serializers import RouteSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+import google.generativeai as genai
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+print("--- MODELOS DISPONÍVEIS ---")
+for m in genai.list_models():
+    if 'generateContent' in m.supported_generation_methods:
+        print(m.name)
+print("---------------------------")
+
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
