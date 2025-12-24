@@ -3,28 +3,21 @@ import google.generativeai as genai
 from rest_framework.views import APIView
 from rest_framework import generics
 from django.contrib.auth.models import User
-from .serializers import UserSerializer
-from rest_framework.permissions import AllowAny
-from .models import SavedRoute
-from .serializers import RouteSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-import google.generativeai as genai
+from .models import SavedRoute
+from .serializers import UserSerializer, RouteSerializer
 
+# Configuração da API Key
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-print("--- MODELOS DISPONÍVEIS ---")
-for m in genai.list_models():
-    if 'generateContent' in m.supported_generation_methods:
-        print(m.name)
-print("---------------------------")
-
-model = genai.GenerativeModel('gemini-1.5-flash')
+# Definindo o modelo disponível conforme seus logs do Render
+CURRENT_MODEL = 'deep-research-pro-preview-12-2025'
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
-    permission_classes = (AllowAny,) # Permite que qualquer um (mesmo deslogado) crie conta
+    permission_classes = (AllowAny,) # Permite que qualquer um crie conta
     serializer_class = UserSerializer
 
 class RouteListCreateView(generics.ListCreateAPIView):
@@ -40,8 +33,6 @@ class RouteListCreateView(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 class AIRouteOptimizerView(APIView):
-    # Se quiser que apenas usuários logados usem, mantenha IsAuthenticated
-    # Se quiser testar sem login por enquanto, use AllowAny
     permission_classes = [IsAuthenticated] 
 
     def post(self, request):
@@ -50,7 +41,7 @@ class AIRouteOptimizerView(APIView):
         if not addresses or len(addresses) < 2:
             return Response({"error": "Forneça pelo menos 2 endereços."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Monta o Prompt aqui no Backend (Mais seguro e organizado)
+        # Monta o Prompt
         lista_formatada = "\n".join([f"- {addr}" for addr in addresses])
         prompt = f"""
         Atue como um especialista em Logística e Roteirização.
@@ -66,13 +57,15 @@ class AIRouteOptimizerView(APIView):
         """
 
         try:
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            # Usando o modelo disponível no seu ambiente
+            model = genai.GenerativeModel(CURRENT_MODEL)
             response = model.generate_content(prompt)
             
-            # Retorna o texto gerado para o React
             return Response({"result": response.text})
             
         except Exception as e:
+            # Imprime o erro no console do Render para facilitar o debug se falhar
+            print(f"Erro Gemini Route: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class AIProspectorView(APIView):
@@ -96,8 +89,10 @@ class AIProspectorView(APIView):
         """
 
         try:
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            # Usando o modelo disponível no seu ambiente
+            model = genai.GenerativeModel(CURRENT_MODEL)
             response = model.generate_content(prompt)
             return Response({"result": response.text})
         except Exception as e:
+            print(f"Erro Gemini Prospect: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
