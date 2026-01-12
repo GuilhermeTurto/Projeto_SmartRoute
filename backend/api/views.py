@@ -13,7 +13,7 @@ from .serializers import UserSerializer, RouteSerializer
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Definindo o modelo disponível conforme seus logs do Render
-CURRENT_MODEL = 'deep-research-pro-preview-12-2025'
+CURRENT_MODEL = 'gemini-1.5-flash'
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -56,9 +56,16 @@ class AIRouteOptimizerView(APIView):
         4. Inclua links do Google Maps para cada ponto.
         """
 
+        # --- CORREÇÃO AQUI ---
+        # 1. Primeiro criamos o objeto model
+        model = genai.GenerativeModel(CURRENT_MODEL)
+
+        # 2. Agora sim podemos imprimir o nome dele para debug
+        print("--- DEBUG FINAL ---")
+        print(f"O modelo que o Python está usando é: {model.model_name}") 
+
         try:
-            # Usando o modelo disponível no seu ambiente
-            model = genai.GenerativeModel(CURRENT_MODEL)
+            # 3. Chama a API
             response = model.generate_content(prompt)
             
             return Response({"result": response.text})
