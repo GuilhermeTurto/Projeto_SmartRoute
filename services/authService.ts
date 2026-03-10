@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 // Garanta que esta URL está correta (sem barra no final aqui, colocamos na chamada)
-const API_URL = 'https://projeto-smartroute.onrender.com/api'; 
+// const API_URL = 'https://projeto-smartroute.onrender.com/api'; 
+const API_URL = "http://127.0.0.1:8000/api";
 
 export const login = async (username, password) => {
     // Adicionei logs para ajudar a debugar se der erro
